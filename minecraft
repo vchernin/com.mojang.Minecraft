@@ -23,4 +23,16 @@ if [ ! -f $XDG_DATA_HOME/../.minecraft/.nonxdg-migrated ]; then
     touch $XDG_DATA_HOME/../.minecraft/.nonxdg-migrated
 fi
 
+# Fabric installer, works in tandem with com.mojang.Minecraft.Utility.fabric (if it's installed).
+# fabric installer needs launcher to have run at least once (launcher profile created) to work
+
+if [ -f "/app/utils/fabric/fabric-installer.jar" ] && [ -f "$XDG_DATA_HOME/../.minecraft/launcher_profiles.json" ] && [ ! -f "$XDG_DATA_HOME/../.minecraft/fabric_previously_installed" ]; then
+    echo "Trying to install Fabric Loader since Fabric Flatpak extension is installed, and fabric_previously_installed does not exist."
+    /app/jre/bin/java -jar /app/utils/fabric/fabric-installer.jar
+    
+    # so we know not to install again after the first time
+    touch "$XDG_DATA_HOME/../.minecraft/fabric_previously_installed" # should this be above or below the fabric installer?
+fi
+
+
 exec /app/extra/minecraft-launcher/minecraft-launcher $@ --workDir $XDG_DATA_HOME/../.minecraft
